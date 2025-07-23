@@ -1,17 +1,11 @@
-"use client";
-
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { MobileMenu } from "./MobileMenu";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const session = true;
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+export async function Header() {
+  const session = await getServerSession(authOptions);
 
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md">
@@ -30,59 +24,27 @@ export function Header() {
               <Link href="/profile">
                 <Button variant="ghost">Profile</Button>
               </Link>
-              <a href="/api/auth/signout">
-                <Button variant="outline">Sign Out</Button>
-              </a>
+              <form action="/api/auth/signout" method="POST">
+                <Button variant="outline" type="submit">
+                  Sign Out
+                </Button>
+              </form>
             </>
           ) : (
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
+            <>
+              <Link href="/login">
+                <Button variant="ghost">Login</Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="outline">Register</Button>
+              </Link>
+            </>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden focus:outline-none"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile Menu */}
+        <MobileMenu session={session} />
       </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden mt-4">
-          <div className="flex flex-col space-y-2">
-            {session ? (
-              <>
-                <Link href="/dashboard" onClick={toggleMenu}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    Dashboard
-                  </Button>
-                </Link>
-                <Link href="/profile" onClick={toggleMenu}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    Profile
-                  </Button>
-                </Link>
-                <a href="/api/auth/signout" onClick={toggleMenu}>
-                  <Button variant="outline" className="w-full justify-start">
-                    Sign Out
-                  </Button>
-                </a>
-              </>
-            ) : (
-              <Link href="/login" onClick={toggleMenu}>
-                <Button variant="outline" className="w-full justify-start">
-                  Login
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   );
 }
