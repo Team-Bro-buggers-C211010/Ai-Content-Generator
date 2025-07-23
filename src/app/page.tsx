@@ -1,20 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/Header/Header";
-import Link from "next/link";
+import { Header } from "@/components/Header/Header";
+import { Footer } from "@/components/Footer/Footer";
+import { Home } from "@/components/Home/Home";
 
-export default function Home() {
+export default function Root() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <Header />
-      <main className="container mx-auto p-4 text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to AI Content Generator</h1>
-        <p className="text-lg text-gray-600 mb-6">
-          Generate high-quality content for blogs, social media, and more with AI.
-        </p>
-        <Link href="/dashboard">
-          <Button size="lg">Get Started</Button>
-        </Link>
-      </main>
+      <Home />
+      <Footer />
     </div>
   );
 }
