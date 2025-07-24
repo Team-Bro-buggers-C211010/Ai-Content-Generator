@@ -24,6 +24,7 @@ import ErrorMessage from "@/components/error-message";
 import { logInSchema } from "@/lib/zod";
 import { Input } from "@/components/ui/input";
 import { Loader2Icon } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [globalError, setGlobalError] = useState<string>("");
@@ -114,9 +115,29 @@ export default function LoginPage() {
             </form>
           </Form>
 
-          <span className="text-sm text-gray-500 text-center block my-2">
-            or
-          </span>
+          <div className="mt-4 text-center text-sm">
+            <p className="text-gray-600">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/register"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Register here
+              </Link>
+            </p>
+          </div>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
           <form className="w-full" action={handleGoogleSignIn}>
             <Button variant="outline" className="w-full" type="submit">
               <IoLogoGoogle className="h-4 w-4 mr-2" />
