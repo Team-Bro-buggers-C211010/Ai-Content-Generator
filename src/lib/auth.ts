@@ -84,6 +84,25 @@ export const authOptions: NextAuthConfig = {
     strategy: "jwt",
   },
   callbacks: {
+    authorized({ request: { nextUrl }, auth }) {
+    const isLoggedIn = !!auth?.user;
+    const { pathname } = nextUrl;
+
+    // Redirect logged-in users away from auth pages
+    if ((pathname.startsWith("/login") || pathname.startsWith("/register")) && isLoggedIn) {
+      return Response.redirect(new URL("/", nextUrl));
+    }
+
+    // Allow access to all routes if logged in
+    if (isLoggedIn) return true;
+
+    // Redirect unauthenticated users to login
+    if (!isLoggedIn && !pathname.startsWith("/login") && !pathname.startsWith("/register") && pathname !== "/") {
+      return Response.redirect(new URL("/login", nextUrl));
+    }
+    
+    return true;
+  },
     async session({
       session,
       token,
