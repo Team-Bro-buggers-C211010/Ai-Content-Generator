@@ -36,3 +36,9 @@ export async function handleSignOut() {
         redirectTo: "/login",
     });
 }
+
+export async function handleGoogleSignIn() {
+    await signIn("google", {
+        redirectTo: "/",
+    });
+}

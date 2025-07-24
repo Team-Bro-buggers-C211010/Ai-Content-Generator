@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { handleCredentialsSignIn } from "../actions/authActions";
+import { handleCredentialsSignIn, handleGoogleSignIn } from "../actions/authActions";
 import ErrorMessage from "@/components/error-message";
 import { logInSchema } from "@/lib/zod";
 import { Input } from "@/components/ui/input";
@@ -117,7 +117,7 @@ export default function LoginPage() {
           <span className="text-sm text-gray-500 text-center block my-2">
             or
           </span>
-          <form className="w-full">
+          <form className="w-full" action={handleGoogleSignIn}>
             <Button variant="outline" className="w-full" type="submit">
               <IoLogoGoogle className="h-4 w-4 mr-2" />
               Sign in with Google
