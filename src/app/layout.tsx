@@ -1,26 +1,31 @@
+import "./globals.css";
 import { Footer } from "@/components/Footer/Footer";
 import { Header } from "@/components/Header/Header";
+import { auth } from "@/lib/auth";
 import { Providers } from "@/lib/providers";
-import "./globals.css";
 import { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "AI Content Generator",
   description: "Generate high-quality content with AI",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="en">
       <body>
         <Providers>
-          <Header />
-          {children}
-          <Footer />
+          <SessionProvider session={session}>
+            <Header />
+            {children}
+            <Footer />
+          </SessionProvider>
         </Providers>
       </body>
     </html>

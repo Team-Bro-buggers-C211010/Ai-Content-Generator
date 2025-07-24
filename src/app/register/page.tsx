@@ -18,6 +18,7 @@ import { RegisterForm } from "@/types";
 import { setRegisterForm, resetForms } from "@/lib/features/formSlice";
 import Link from "next/link";
 import { useRegisterUserMutation } from "@/lib/features/contentApi";
+import { RootState } from "@/lib/store";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -27,7 +28,7 @@ const registerSchema = z.object({
 
 export default function Register() {
   const dispatch = useDispatch();
-  const { register: formState } = useSelector((state: any) => state.form);
+  const { register: formState } = useSelector((state: RootState) => state.form);
   const router = useRouter();
   const [registerUser, { isLoading, error }] = useRegisterUserMutation();
   const {
@@ -44,7 +45,7 @@ export default function Register() {
       await registerUser(data).unwrap();
       dispatch(resetForms());
       router.push("/login");
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
     }
   };

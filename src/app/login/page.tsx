@@ -2,132 +2,129 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useDispatch, useSelector } from "react-redux";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { IoLogoGoogle } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
+import { handleCredentialsSignIn } from "../actions/authActions";
+import ErrorMessage from "@/components/error-message";
+import { logInSchema } from "@/lib/zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { LoginForm } from "@/types";
-import { setLoginForm } from "@/lib/features/formSlice";
-import Link from "next/link";
+import { Loader2Icon } from "lucide-react";
 
-const loginSchema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-export default function Login() {
-  const dispatch = useDispatch();
-  const { login } = useSelector((state: any) => state.form);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: login,
+export default function LoginPage() {
+  const [globalError, setGlobalError] = useState<string>("");
+  const form = useForm<z.infer<typeof logInSchema>>({
+    resolver: zodResolver(logInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const onSubmit = async (data: LoginForm) => {
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
+  const onSubmit = async (data: z.infer<typeof logInSchema>) => {
+    try {
+      const result = await handleCredentialsSignIn(data);
 
-    if (result?.error) {
-      setError("root", { message: result.error });
-    } else {
-      router.push("/");
+      if (result?.success) {
+        window.location.href = "/";
+      }
+
+      if (result?.message) {
+        setGlobalError(result.message);
+      }
+    } catch (error) {
+      console.log("An unexpected error occurred. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <main className="flex items-center justify-center min-h-[calc(100vh-64px)] p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>Sign in to your account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {error && (
-              <p className="text-red-500 text-sm mb-4">Error: {error}</p>
-            )}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  onChange={(e) =>
-                    dispatch(setLoginForm({ email: e.target.value }))
-                  }
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-center text-gray-800">
+            Welcome Back to <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">AI Content Generator</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {globalError && <ErrorMessage error={globalError} />}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email address"
+                        autoComplete="off"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  onChange={(e) =>
-                    dispatch(setLoginForm({ password: e.target.value }))
-                  }
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </p>
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              {errors.root && (
-                <p className="text-red-500 text-sm">{errors.root.message}</p>
+              />
+
+              {/* Submit button will go here */}
+              {form.formState.isSubmitting ? (
+                <Button disabled className="w-full">
+                  <Loader2Icon className="animate-spin h-4 w-4 mr-2" />
+                  Signing in...
+                </Button>
+              ) : (
+                <Button type="submit" className="w-full">
+                  Sign In
+                </Button>
               )}
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Signing In..." : "Sign In"}
-              </Button>
             </form>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  href="/register"
-                  className="text-blue-600 hover:underline"
-                >
-                  Register
-                </Link>
-              </p>
-            </div>
-            <div className="mt-4">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
-              >
-                Sign in with Google
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
+          </Form>
+
+          <span className="text-sm text-gray-500 text-center block my-2">
+            or
+          </span>
+          <form className="w-full">
+            <Button variant="outline" className="w-full" type="submit">
+              <IoLogoGoogle className="h-4 w-4 mr-2" />
+              Sign in with Google
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
