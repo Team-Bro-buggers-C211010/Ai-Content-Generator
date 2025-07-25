@@ -19,3 +19,7 @@ export const registerSchema = object({
         .min(1, "Password is required")
         .min(6, "Password must be more than 6 characters")
 });
+
+export const contentSchema = object({
+  prompt: string().min(1, "Prompt is required"),
+});

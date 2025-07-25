@@ -15,3 +15,13 @@ export interface LoginForm {
   email: string;
   password: string;
 }
+
+export interface FormState {
+  login: {
+    email: string;
+    password: string;
+  };
+  content: {
+    prompt: string;
+  };
+}
