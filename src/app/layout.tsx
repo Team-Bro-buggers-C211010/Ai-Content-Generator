@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { Providers } from "@/lib/providers";
 import { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "AI Content Generator",
@@ -25,6 +26,7 @@ export default async function RootLayout({
             <Header />
             {children}
             <Footer />
+            <Toaster position="top-center" richColors/>
           </SessionProvider>
         </Providers>
       </body>
