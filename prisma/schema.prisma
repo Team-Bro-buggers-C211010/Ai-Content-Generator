@@ -59,6 +59,7 @@ model Content {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   prompt    String
+  contentType String
   output    String
   createdAt DateTime @default(now())
 }

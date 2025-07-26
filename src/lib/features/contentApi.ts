@@ -1,3 +1,4 @@
+import { Content } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const contentApi = createApi({
@@ -5,14 +6,14 @@ export const contentApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   tagTypes: ["Content"],
   endpoints: (builder) => ({
-    getContent: builder.query<any[], string>({
+    getContent: builder.query<Content[], string>({
       query: (userId) => ({
         url: "/content",
         params: { userId },
       }),
       providesTags: ["Content"],
     }),
-    createContent: builder.mutation<any, { prompt: string; userId: string }>({
+    createContent: builder.mutation<Content, { prompt: string; userId: string, contentType: string }>({
       query: (data) => ({
         url: "/content",
         method: "POST",

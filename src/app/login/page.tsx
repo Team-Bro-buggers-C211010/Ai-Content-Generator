@@ -48,7 +48,7 @@ export default function LoginPage() {
         setGlobalError(result.message);
       }
     } catch (error) {
-      console.log("An unexpected error occurred. Please try again.");
+      console.log("An unexpected error occurred. Please try again." + error);
     }
   };
 

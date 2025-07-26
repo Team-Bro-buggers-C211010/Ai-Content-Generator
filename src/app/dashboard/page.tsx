@@ -29,10 +29,22 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { DashBoardSkelsLoad } from "@/components/Skeletons/DashBoardSkelsLoad";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import { Content } from "@/types";
 
 type ContentForm = z.infer<typeof contentSchema>;
 
 export default function Dashboard() {
+  const [contentType, setContentType] = useState<
+    "blog-post" | "content" | "dialogues" | "seo-optimized"
+  >("content");
   const { data: session, status } = useSession();
   const router = useRouter();
   const {
@@ -70,6 +82,7 @@ export default function Dashboard() {
       await createContent({
         prompt: data.prompt,
         userId: session!.user.id,
+        contentType,
       }).unwrap();
 
       toast.success("Content successfully generated and saved.", {
@@ -84,6 +97,7 @@ export default function Dashboard() {
           ? "Please check your API key or credits."
           : "Please try again later.",
       });
+      console.log(err);
     }
   };
 
@@ -193,6 +207,30 @@ export default function Dashboard() {
                       </p>
                     )}
                   </div>
+                  <div>
+                    <Label
+                      htmlFor="contentType"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Content Type
+                    </Label>
+                    <Select
+                      value={contentType}
+                      onValueChange={(value) => setContentType(value as "blog-post" | "content" | "dialogues" | "seo-optimized")}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select content type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="blog-post">Blog Post</SelectItem>
+                        <SelectItem value="content">General Content</SelectItem>
+                        <SelectItem value="dialogues">Dialogues</SelectItem>
+                        <SelectItem value="seo-optimized">
+                          SEO Optimized
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md"
@@ -273,24 +311,33 @@ export default function Dashboard() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {contents.map((content: any) => (
+                  {contents.map((content: Content) => (
                     <Card
                       key={content.id}
                       className="border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                     >
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-gray-800 line-clamp-1">
-                              {content.prompt}
-                            </h3>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {new Date(content.createdAt).toLocaleString()}
-                            </p>
+                      <CardContent className="p-4">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-medium text-gray-800 line-clamp-1">
+                                {content.prompt[0].toUpperCase() +
+                                  content.prompt.slice(1)}
+                              </h3>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(content.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="flex justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-1 py-1 rounded">
+                                {content.contentType[0].toUpperCase() +
+                                  content.contentType.slice(1)}
+                              </p>
+                              <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
+                                {content.output.split(/\s+/).length} words
+                              </span>
+                            </div>
                           </div>
-                          <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
-                            {content.output.split(/\s+/).length} words
-                          </span>
                         </div>
 
                         <div className="mt-4 prose prose-sm max-w-none overflow-hidden">

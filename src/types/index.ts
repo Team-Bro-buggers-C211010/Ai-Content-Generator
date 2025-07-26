@@ -2,7 +2,9 @@ export interface Content {
   id: string;
   prompt: string;
   output: string;
-  createdAt: string;
+  userId: string;
+  contentType: string;
+  createdAt: Date | string;
 }
 
 export interface RegisterForm {
@@ -25,3 +27,9 @@ export interface FormState {
     prompt: string;
   };
 }
+
+export type ContentType = 
+  | "blog-post" 
+  | "content" 
+  | "dialogues" 
+  | "seo-optimized";

@@ -47,6 +47,7 @@ export default function RegisterPage() {
       }
     } catch (error) {
       setGlobalError("An unexpected error occurred. Please try again.");
+      console.log(error);
     }
   };
 

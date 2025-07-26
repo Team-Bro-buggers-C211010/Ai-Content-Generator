@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import {
@@ -15,11 +15,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { Content } from "@/types";
 
 export default function ContentDetailModalClient({
   content,
 }: {
-  content: any;
+  content: Content;
 }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);

@@ -2,14 +2,46 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { ContentType } from "@/types";
 
+// Define the content type union
+const contentTypeEnum = z.enum(["blog-post", "content", "dialogues", "seo-optimized"]);
+
+// Update your contentSchema
 const contentSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   userId: z.string().min(1, "User ID is required"),
+  contentType: contentTypeEnum.optional(),
 });
 
-async function generateAIContent(prompt: string): Promise<string> {
+
+async function generateAIContent(
+  prompt: string,
+  contentType: ContentType = 'content'
+): Promise<string> {
   try {
+    // Define content-specific instructions
+    const contentInstructions: Record<typeof contentType, { system: string, user: string }> = {
+      'blog-post': {
+        system: "You are a professional blog writer. Create a well-structured blog post with an engaging introduction, key points, detailed explanations, and a compelling conclusion.",
+        user: `Write a comprehensive blog post about: ${prompt}`
+      },
+      'content': {
+        system: "You are a content creation expert. Generate informative, engaging content that provides value to readers.",
+        user: `Create detailed content about: ${prompt}`
+      },
+      'dialogues': {
+        system: "You are a dialogue specialist. Create realistic conversations between characters with distinct voices and personalities.",
+        user: `Generate a dialogue about: ${prompt}`
+      },
+      'seo-optimized': {
+        system: "You are an SEO expert. Create content optimized for search engines with proper keyword placement, headings, and meta-friendly structure.",
+        user: `Generate SEO-optimized content about: ${prompt}`
+      }
+    };
+
+    const { system, user } = contentInstructions[contentType];
+    
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -25,16 +57,18 @@ async function generateAIContent(prompt: string): Promise<string> {
           messages: [
             {
               role: "system",
-              content:
-                "You are a helpful AI assistant that generates detailed and professional blog posts.",
+              content: system
             },
             {
               role: "user",
-              content: `Generate a detailed and professional post about ${prompt}`,
-            },
+              content: user
+            }
           ],
-          max_tokens: 500,
-          temperature: 0.7,
+          max_tokens: 700,
+          temperature: 0.65,
+          top_p: 0.9,
+          frequency_penalty: 0.2,
+          presence_penalty: 0.1
         }),
       }
     );
@@ -46,7 +80,6 @@ async function generateAIContent(prompt: string): Promise<string> {
     }
 
     const data = await response.json();
-    console.log("OpenRouter API response:", data);
 
     if (!data.choices || !data.choices[0]?.message?.content) {
       throw new Error("Invalid API response format");
@@ -67,18 +100,19 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { prompt, userId } = contentSchema.parse(body);
+    const { prompt, userId, contentType } = contentSchema.parse(body);
 
     if (userId !== session.user.id) {
       return NextResponse.json({ error: "Invalid user" }, { status: 403 });
     }
 
-    const output = await generateAIContent(prompt);
+    const output = await generateAIContent(prompt, contentType || "content");
 
     const content = await prisma.content.create({
       data: {
         userId,
         prompt,
+        contentType: contentType || "content",
         output,
       },
     });
@@ -99,7 +133,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -119,3 +153,4 @@ export async function GET(request: Request) {
     );
   }
 }
+

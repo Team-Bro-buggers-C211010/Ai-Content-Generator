@@ -2,13 +2,15 @@ import { getContentById } from "@/app/actions/contentActions";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 
-export default async function ContentDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id : contentId } = await params;
-  const content = await getContentById(contentId);
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function ContentDetailPage(props: PageProps) {
+  // const { id: contentId } = await params;
+  const content = await getContentById(props.params.id);
 
   if (!content) {
     return (
@@ -30,9 +32,12 @@ export default async function ContentDetailPage({
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="border-b pb-6 mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              {content.prompt}
-            </h1>
+            <div className="flex justify-between">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-2">
+                {content.prompt[0].toUpperCase() + content.prompt.slice(1)}
+              </h1>
+              <p className="flex justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-1 py-1 rounded">{content.contentType[0].toUpperCase() + content.contentType.slice(1)}</p>
+            </div>
             <div className="flex items-center text-gray-500 text-sm">
               <span>
                 Created on:{" "}
@@ -51,3 +56,5 @@ export default async function ContentDetailPage({
     </div>
   );
 }
+
+export const dynamicParams = true;
