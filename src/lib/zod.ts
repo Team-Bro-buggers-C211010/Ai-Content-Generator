@@ -23,3 +23,8 @@ export const registerSchema = object({
 export const contentSchema = object({
   prompt: string().min(1, "Prompt is required"),
 });
+
+export const profileSchema = object({
+  name: string().min(1, "Name is required"),
+  email: string().email("Invalid email"),
+});
