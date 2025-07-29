@@ -6,7 +6,7 @@ export const profileApi = createApi({
   endpoints: (builder) => ({
     updateProfile: builder.mutation<
       any,
-      { id: string; name: string; email: string }
+      { id: string; name: string; image?: string }
     >({
       query: (data) => ({
         url: "/profile",

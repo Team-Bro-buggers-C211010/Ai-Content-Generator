@@ -10,17 +10,21 @@ const FeatureCard = ({ title, description }: { title: string; description: strin
 export const Features = () => {
   const features = [
     {
-      title: "Blog Post Generation",
-      description: "Create engaging blog posts in minutes with AI-powered writing tools.",
+      title: "Content Creation",
+      description: "Generate informative and engaging content for various purposes.",
     },
     {
-      title: "Social Media Content",
-      description: "Generate catchy captions and posts tailored for any platform.",
+      title: "Blog Post Generation",
+      description: "Create engaging blog posts in minutes with AI-powered writing tools.",
     },
     {
       title: "SEO Optimization",
       description: "Boost your content’s visibility with AI-driven SEO suggestions.",
     },
+    {
+      title: "Dialogue Generation",
+      description: "Create realistic conversations between characters with distinct voices.",
+    }
   ];
 
   return (

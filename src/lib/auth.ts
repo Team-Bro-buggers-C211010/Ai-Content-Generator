@@ -18,15 +18,21 @@ export const authOptions: NextAuthConfig = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "Email" },
-        password: { label: "Password", type: "password", placeholder: "Password" },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Password",
+        },
       },
       async authorize(credentials) {
-
         const parsedCredentials = logInSchema.safeParse(credentials);
 
         if (!parsedCredentials.success) {
-          console.error("Invalid credentials :", parsedCredentials.error.message);
-          return null;  
+          console.error(
+            "Invalid credentials:",
+            parsedCredentials.error.message
+          );
+          return null;
         }
 
         if (!credentials?.email || !credentials?.password) {
@@ -55,7 +61,14 @@ export const authOptions: NextAuthConfig = {
             console.error("Invalid email or password: Mismatch.");
             throw new Error("Invalid email or password");
           }
-          return { id: user.id, email: user.email, name: user.name };
+
+          // Return all necessary user data including image
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          };
         } catch (bcryptError) {
           console.error("Bcrypt comparison error:", bcryptError);
           throw new Error("Authentication failed due to a server error.");
@@ -73,37 +86,54 @@ export const authOptions: NextAuthConfig = {
   },
   callbacks: {
     async authorized({ request: { nextUrl }, auth }) {
-    const isLoggedIn = !!auth?.user;
-    const { pathname } = nextUrl;
+      const isLoggedIn = !!auth?.user;
+      const { pathname } = nextUrl;
 
-    // Redirect logged-in users away from auth pages
-    if ((pathname.startsWith("/login") || pathname.startsWith("/register")) && isLoggedIn) {
-      return Response.redirect(new URL("/", nextUrl));
-    }
+      // Redirect logged-in users away from auth pages
+      if (
+        (pathname.startsWith("/login") || pathname.startsWith("/register")) &&
+        isLoggedIn
+      ) {
+        return Response.redirect(new URL("/", nextUrl));
+      }
 
-    // Allow access to all routes if logged in
-    if (isLoggedIn) return true;
+      // Allow access to all routes if logged in
+      if (isLoggedIn) return true;
 
-    // Redirect unauthenticated users to login
-    if (!isLoggedIn && !pathname.startsWith("/login") && !pathname.startsWith("/register") && pathname !== "/") {
-      return Response.redirect(new URL("/login", nextUrl));
-    }
-    
-    return true;
-  },
+      // Redirect unauthenticated users to login
+      if (
+        !isLoggedIn &&
+        !pathname.startsWith("/login") &&
+        !pathname.startsWith("/register") &&
+        pathname !== "/"
+      ) {
+        return Response.redirect(new URL("/login", nextUrl));
+      }
 
-  async jwt({ token, user }) {
-    if (user) {
-      token.id = user.id;
-    }
-    return token;
-  },
-    async session({
-      session,
-      token,
-    }) {
+      return true;
+    },
+
+    async jwt({ token, user, trigger, session }) {
+      // Update token when session is updated
+      if (trigger === "update" && session?.user) {
+        token.name = session.user.name;
+        token.picture = session.user.image;
+      }
+
+      // Add user info to token on sign-in
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
       }
       return session;
     },
@@ -111,9 +141,4 @@ export const authOptions: NextAuthConfig = {
   debug: true,
 };
 
-export const {
-  handlers,
-  auth,
-  signIn,
-  signOut,
-} = NextAuth(authOptions);
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
