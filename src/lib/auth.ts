@@ -13,6 +13,14 @@ export const authOptions: NextAuthConfig = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
+        },
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -136,6 +144,11 @@ export const authOptions: NextAuthConfig = {
         session.user.image = token.picture as string;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) 
+        ? url 
+        : process.env.NEXTAUTH_URL!;
     },
   },
   trustHost: true,
