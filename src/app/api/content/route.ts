@@ -4,44 +4,69 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { ContentType } from "@/types";
 
-// Define the content type union
-const contentTypeEnum = z.enum(["blog-post", "content", "dialogues", "seo-optimized"]);
+const contentTypeEnum = z.enum([
+  "blog-post",
+  "social-media",
+  "seo-optimized",
+  "dialogue",
+  "email-campaign",
+  "content-repurposing",
+  "brand-voice",
+]);
 
-// Update your contentSchema
 const contentSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   userId: z.string().min(1, "User ID is required"),
   contentType: contentTypeEnum.optional(),
 });
 
-
 async function generateAIContent(
   prompt: string,
-  contentType: ContentType = 'content'
+  contentType: ContentType = "blog-post"
 ): Promise<string> {
   try {
     // Define content-specific instructions
-    const contentInstructions: Record<typeof contentType, { system: string, user: string }> = {
-      'blog-post': {
-        system: "You are a professional blog writer. Create a well-structured blog post with an engaging introduction, key points, detailed explanations, and a compelling conclusion.",
-        user: `Write a comprehensive blog post about: ${prompt}`
+    const contentInstructions = {
+      "blog-post": {
+        system:
+          "You are a professional blog writer. Create a well-structured blog post with an engaging introduction, key points, detailed explanations, and a compelling conclusion.",
+        user: `Write a comprehensive blog post about: ${prompt}`,
       },
-      'content': {
-        system: "You are a content creation expert. Generate informative, engaging content that provides value to readers.",
-        user: `Create detailed content about: ${prompt}`
+      "social-media": {
+        system:
+          "You are a social media expert. Create engaging posts for platforms like Instagram, Twitter, LinkedIn, and TikTok. Include relevant hashtags and emojis.",
+        user: `Create social media content about: ${prompt}`,
       },
-      'dialogues': {
-        system: "You are a dialogue specialist. Create realistic conversations between characters with distinct voices and personalities.",
-        user: `Generate a dialogue about: ${prompt}`
+      "seo-optimized": {
+        system:
+          "You are an SEO expert. Create content optimized for search engines with proper keyword placement, headings, and meta-friendly structure.",
+        user: `Generate SEO-optimized content about: ${prompt}`,
       },
-      'seo-optimized': {
-        system: "You are an SEO expert. Create content optimized for search engines with proper keyword placement, headings, and meta-friendly structure.",
-        user: `Generate SEO-optimized content about: ${prompt}`
-      }
+      dialogue: {
+        system:
+          "You are a dialogue specialist. Create realistic conversations between characters with distinct voices and personalities.",
+        user: `Generate a dialogue about: ${prompt}`,
+      },
+      "email-campaign": {
+        system:
+          "You are an email marketing specialist. Create persuasive email campaigns with compelling subject lines and clear calls to action.",
+        user: `Create an email campaign about: ${prompt}`,
+      },
+      "content-repurposing": {
+        system:
+          "You are a content strategist. Repurpose long-form content into multiple formats like social posts, emails, and summaries.",
+        user: `Repurpose this content: ${prompt}`,
+      },
+      "brand-voice": {
+        system:
+          "You are a brand voice specialist. Adapt the content to match the brand's tone and style guidelines.",
+        user: `Create content in brand voice about: ${prompt}`,
+      },
     };
 
+    // Handle text-based content types
     const { system, user } = contentInstructions[contentType];
-    
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -57,18 +82,18 @@ async function generateAIContent(
           messages: [
             {
               role: "system",
-              content: system
+              content: system,
             },
             {
               role: "user",
-              content: user
-            }
+              content: user,
+            },
           ],
           max_tokens: 700,
           temperature: 0.65,
           top_p: 0.9,
           frequency_penalty: 0.2,
-          presence_penalty: 0.1
+          presence_penalty: 0.1,
         }),
       }
     );
@@ -87,8 +112,8 @@ async function generateAIContent(
 
     return data.choices[0].message.content.trim();
   } catch (error) {
-    console.error("OpenRouter API error:", error);
-    return `Mock AI response for prompt: ${prompt}`;
+    console.error("Content generation error:", error);
+    throw new Error("Failed to generate content");
   }
 }
 
@@ -106,13 +131,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid user" }, { status: 403 });
     }
 
-    const output = await generateAIContent(prompt, contentType || "content");
+    const output = await generateAIContent(
+      prompt,
+      (contentType as ContentType) || "blog-post"
+    );
 
     const content = await prisma.content.create({
       data: {
         userId,
         prompt,
-        contentType: contentType || "content",
+        contentType: contentType || "blog-post",
         output,
       },
     });
@@ -153,4 +181,3 @@ export async function GET() {
     );
   }
 }
-

@@ -33,10 +33,15 @@ export default async function ContentDetailPage(props: PageProps) {
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="border-b pb-6 mb-8">
             <div className="flex justify-between">
-              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-2">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-800 mb-2 max-w-[80%]">
                 {content.prompt[0].toUpperCase() + content.prompt.slice(1)}
               </h1>
-              <p className="flex justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-1 py-1 rounded">{content.contentType[0].toUpperCase() + content.contentType.slice(1)}</p>
+              <div>
+                <p className="flex justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-1 py-1 rounded">
+                  {content.contentType[0].toUpperCase() +
+                    content.contentType.slice(1)}
+                </p>
+              </div>
             </div>
             <div className="flex items-center text-gray-500 text-sm">
               <span>

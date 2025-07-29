@@ -30,6 +30,9 @@ export interface FormState {
 
 export type ContentType = 
   | "blog-post" 
-  | "content" 
-  | "dialogues" 
-  | "seo-optimized";
+  | "social-media" 
+  | "seo-optimized"
+  | "dialogue" 
+  | "email-campaign"
+  | "content-repurposing"
+  | "brand-voice";

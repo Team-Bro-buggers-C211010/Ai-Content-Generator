@@ -27,6 +27,11 @@ import {
   FileText,
   History,
   ExternalLink,
+  Mail,
+  RefreshCw,
+  Hash,
+  Mic,
+  PenTool,
 } from "lucide-react";
 import { DashBoardSkelsLoad } from "@/components/Skeletons/DashBoardSkelsLoad";
 import {
@@ -37,14 +42,55 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
-import { Content } from "@/types";
+import { Content, ContentType } from "@/types";
 
 type ContentForm = z.infer<typeof contentSchema>;
 
+// Content type options with icons
+const contentTypeOptions: {
+  value: ContentType;
+  label: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    value: "blog-post",
+    label: "Blog Post",
+    icon: <FileText className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "social-media",
+    label: "Social Media",
+    icon: <Hash className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "seo-optimized",
+    label: "SEO Optimized",
+    icon: <BarChart3 className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "dialogue",
+    label: "Dialogues",
+    icon: <Mic className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "email-campaign",
+    label: "Email Campaign",
+    icon: <Mail className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "content-repurposing",
+    label: "Content Repurposing",
+    icon: <RefreshCw className="h-4 w-4 mr-2" />,
+  },
+  {
+    value: "brand-voice",
+    label: "Brand Voice",
+    icon: <PenTool className="h-4 w-4 mr-2" />,
+  },
+];
+
 export default function Dashboard() {
-  const [contentType, setContentType] = useState<
-    "blog-post" | "content" | "dialogues" | "seo-optimized"
-  >("content");
+  const [contentType, setContentType] = useState<ContentType>("blog-post");
   const { data: session, status } = useSession();
   const router = useRouter();
   const {
@@ -113,18 +159,33 @@ export default function Dashboard() {
         contentCount
       : 0;
 
+  // Count by content type
+  const typeCounts: Record<ContentType, number> = {
+    "blog-post": 0,
+    "social-media": 0,
+    "seo-optimized": 0,
+    dialogue: 0,
+    "email-campaign": 0,
+    "content-repurposing": 0,
+    "brand-voice": 0,
+  };
+
+  contents.forEach((content) => {
+    typeCounts[content.contentType as ContentType] += 1;
+  });
+
   // Function to view full content
   const viewFullContent = (contentId: string) => {
     router.push(`/content/${contentId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Stats */}
           <div className="lg:col-span-1 space-y-6">
-            <Card className="shadow-sm border-gray-200">
+            <Card className="shadow-lg border-gray-200 bg-white rounded-xl">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
                   <BarChart3 className="h-5 w-5 mr-2 text-indigo-600" />
@@ -172,11 +233,44 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Content Type Distribution */}
+            <Card className="shadow-lg border-gray-200 bg-white rounded-xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-indigo-600" />
+                  Content Distribution
+                </CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Breakdown by content type
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {contentTypeOptions.map((type) => (
+                  <div
+                    key={type.value}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center">
+                      <div className="bg-indigo-100 rounded-md p-2 mr-3">
+                        {type.icon}
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">
+                        {type.label}
+                      </span>
+                    </div>
+                    <span className="bg-gray-100 text-gray-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                      {typeCounts[type.value]}
+                    </span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right Column - Content Area */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="shadow-sm border-gray-200">
+            <Card className="shadow-lg border-gray-200 bg-white rounded-xl">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
                   <Sparkles className="h-5 w-5 mr-2 text-indigo-600" />
@@ -198,7 +292,7 @@ export default function Dashboard() {
                     <Textarea
                       id="prompt"
                       {...register("prompt")}
-                      placeholder="Enter your content prompt (e.g., 'Write a professional email' or 'Give me 5 Bangla jokes')..."
+                      placeholder="Enter your content prompt (e.g., 'Write a professional email' or 'Create a Twitter thread about AI')..."
                       className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm min-h-[120px]"
                     />
                     {errors.prompt && (
@@ -216,18 +310,22 @@ export default function Dashboard() {
                     </Label>
                     <Select
                       value={contentType}
-                      onValueChange={(value) => setContentType(value as "blog-post" | "content" | "dialogues" | "seo-optimized")}
+                      onValueChange={(value) =>
+                        setContentType(value as ContentType)
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select content type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="blog-post">Blog Post</SelectItem>
-                        <SelectItem value="content">General Content</SelectItem>
-                        <SelectItem value="dialogues">Dialogues</SelectItem>
-                        <SelectItem value="seo-optimized">
-                          SEO Optimized
-                        </SelectItem>
+                        {contentTypeOptions.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            <div className="flex items-center">
+                              {type.icon}
+                              {type.label}
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -311,53 +409,60 @@ export default function Dashboard() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {contents.map((content: Content) => (
-                    <Card
-                      key={content.id}
-                      className="border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex flex-col gap-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-medium text-gray-800 line-clamp-1">
-                                {content.prompt[0].toUpperCase() +
-                                  content.prompt.slice(1)}
-                              </h3>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {new Date(content.createdAt).toLocaleString()}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="flex justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-1 py-1 rounded">
-                                {content.contentType[0].toUpperCase() +
-                                  content.contentType.slice(1)}
-                              </p>
-                              <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
-                                {content.output.split(/\s+/).length} words
-                              </span>
+                  {contents.map((content: Content) => {
+                    // Find the content type details
+                    const typeDetails = contentTypeOptions.find(
+                      (option) => option.value === content.contentType
+                    );
+
+                    return (
+                      <Card
+                        key={content.id}
+                        className="border-gray-200 shadow-sm hover:shadow-md transition-shadow bg-white rounded-xl"
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-medium text-gray-800 line-clamp-1 max-w-[80%]">
+                                  {content.prompt[0].toUpperCase() +
+                                    content.prompt.slice(1)}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {new Date(content.createdAt).toLocaleString()}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="flex flex-1 justify-center items-center text-sky-500 bg-sky-100 text-sm font-semibold px-2 py-1 rounded">
+                                  {typeDetails?.icon}
+                                  {typeDetails?.label || content.contentType}
+                                </p>
+                                <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded mt-1 inline-block">
+                                  {content.output.split(/\s+/).length} words
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="mt-4 prose prose-sm max-w-none overflow-hidden">
-                          <div className="text-sm text-gray-700 line-clamp-3">
-                            <ReactMarkdown>{content.output}</ReactMarkdown>
+                          <div className="mt-4 prose prose-sm max-w-none overflow-hidden">
+                            <div className="text-sm text-gray-700 line-clamp-3">
+                              <ReactMarkdown>{content.output}</ReactMarkdown>
+                            </div>
                           </div>
-                        </div>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="mt-4 text-indigo-600 hover:text-indigo-800 flex items-center"
-                          onClick={() => viewFullContent(content.id)}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          View Full Content
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-4 text-indigo-600 hover:text-indigo-800 flex items-center"
+                            onClick={() => viewFullContent(content.id)}
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            View Full Content
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </div>

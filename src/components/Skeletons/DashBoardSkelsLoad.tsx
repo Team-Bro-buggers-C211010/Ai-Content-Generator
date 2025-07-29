@@ -25,6 +25,24 @@ export const DashBoardSkelsLoad = () => {
                 ))}
               </CardContent>
             </Card>
+            
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-full mt-2" />
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[...Array(7)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Skeleton className="h-8 w-8 rounded-md mr-3" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right Column - Content Area */}
