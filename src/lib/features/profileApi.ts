@@ -1,3 +1,4 @@
+import { ProfileResponse } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const profileApi = createApi({
@@ -5,7 +6,7 @@ export const profileApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   endpoints: (builder) => ({
     updateProfile: builder.mutation<
-      any,
+      ProfileResponse,
       { id: string; name: string; image?: string }
     >({
       query: (data) => ({

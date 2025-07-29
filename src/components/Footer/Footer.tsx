@@ -6,19 +6,19 @@ export function Footer() {
       <div className="container mx-auto px-4 text-center">
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4">
           <Link
-            href="/about"
+            href="/"
             className="hover:text-indigo-400 transition-colors duration-300"
           >
             About
           </Link>
           <Link
-            href="/contact"
+            href="/"
             className="hover:text-indigo-400 transition-colors duration-300"
           >
             Contact
           </Link>
           <Link
-            href="/privacy"
+            href="/"
             className="hover:text-indigo-400 transition-colors duration-300"
           >
             Privacy Policy

@@ -36,3 +36,13 @@ export type ContentType =
   | "email-campaign"
   | "content-repurposing"
   | "brand-voice";
+
+export interface CloudinaryResult {
+  secure_url: string;
+}
+
+export type ProfileResponse = {
+  id: string;
+  name: string;
+  image: string | null;
+};

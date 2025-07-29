@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { ContentType } from "@/types";
+import { auth } from "@/lib/auth";
 
 const contentTypeEnum = z.enum([
   "blog-post",

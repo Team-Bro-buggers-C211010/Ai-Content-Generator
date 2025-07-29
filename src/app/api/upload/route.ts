@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
+import { CloudinaryResult } from "@/types";
 import { auth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
+    const result = await new Promise<CloudinaryResult>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
           {
@@ -32,18 +33,19 @@ export async function POST(req: NextRequest) {
           },
           (error, result) => {
             if (error) reject(error);
-            else resolve(result);
+            else resolve(result as CloudinaryResult);
           }
         )
         .end(buffer);
     });
 
-    return NextResponse.json({ url: (result as any).secure_url });
-  } catch (error) {
+    return NextResponse.json({ url: result.secure_url });
+  } catch (error: unknown) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to upload image" },
-      { status: 500 }
-    );
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to upload image";
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

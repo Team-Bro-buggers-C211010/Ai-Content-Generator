@@ -2,15 +2,12 @@ import { getContentById } from "@/app/actions/contentActions";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ContentDetailPage(props: PageProps) {
-  // const { id: contentId } = await params;
-  const content = await getContentById(props.params.id);
+export default async function ContentDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const content = await getContentById(params.id);
 
   if (!content) {
     return (
@@ -61,5 +58,3 @@ export default async function ContentDetailPage(props: PageProps) {
     </div>
   );
 }
-
-export const dynamicParams = true;

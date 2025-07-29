@@ -138,6 +138,7 @@ export const authOptions: NextAuthConfig = {
       return session;
     },
   },
+  trustHost: true,
   debug: true,
 };
 

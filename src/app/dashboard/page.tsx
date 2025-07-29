@@ -164,7 +164,7 @@ export default function Dashboard() {
     "blog-post": 0,
     "social-media": 0,
     "seo-optimized": 0,
-    dialogue: 0,
+    "dialogue": 0,
     "email-campaign": 0,
     "content-repurposing": 0,
     "brand-voice": 0,

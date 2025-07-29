@@ -129,6 +129,7 @@ export default function Profile() {
       toast.error("Failed to update profile", {
         description: "Please try again later",
       });
+      console.log(err);
       setImageUploading(false);
     }
   };
