@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 AI Content Generator
 
-## Getting Started
+Live Project: [AI-Content-Generator](https://ai-content-generator-next.vercel.app)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+AI Content Generator is a powerful platform built with the latest Next.js 15 (App Router) that leverages the power of AI to streamline the content creation process. Whether you're crafting blog posts, creating marketing materials, or generating SEO-optimized social media content, this app has you covered. It features modern authentication, AI integration, and seamless cloud storage for an intuitive and secure experience.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Features
 
-## Learn More
+- **Content Creation**: Generate informative and engaging content for blogs, websites, and marketing materials.
+- **Blog Post Generation**: Create SEO-optimized blog posts in minutes with AI-powered research and structuring.
+- **SEO Optimization**: Boost your content's visibility with AI-driven keyword optimization and semantic analysis.
+- **Dialogue Generation**: Create realistic character dialogues for scripts, games, and conversational AI.
+- **Social Media Content**: Generate platform-specific posts with trending hashtags and engagement hooks.
+- **Content Repurposing**: Transform long-form content into social snippets, emails, and presentations.
+- **Brand Voice Customization**: Maintain a consistent brand tone across all generated content.
+- **AI Image Generation (Upcoming)**: Create custom visuals to accompany your content using text-to-image AI.
+- **Google OAuth & Credential Auth**: Secure sign-in options using NextAuth.js.
+- **Cloud Storage**: Upload and manage images with Cloudinary integration.
+- **Content Management**: Save, edit, and revisit generated content.
+- **Responsive UI**: Mobile-first design with full responsiveness.
+- **Markdown Support**: Format, preview, and edit content using markdown syntax.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠 Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework**: Next.js 15 (App Router)
+- **Frontend**: React 19 + Tailwind CSS
+- **Backend**: TypeScript + Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js with Google OAuth & Credentials
+- **AI Integration**: OpenRouter API
+- **Image Storage**: Cloudinary
+- **Deployment**: Vercel
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Getting Started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### ✅ Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js v18+
+- PNPM (preferred package manager)
+- PostgreSQL Database
+- Google OAuth credentials
+- OpenRouter API Key
+- Cloudinary Account
+
+---
+
